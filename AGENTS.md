@@ -6,10 +6,19 @@ ASP.NET Core 8 recipe management app using Clean Architecture with SQLite and EF
 ## Project Structure
 ```
 src/
-├── Domain/          # Core business entities
-├── Application/     # Business logic, interfaces, DTOs
-├── Infrastructure/  # Data access, repositories
-└── API/             # Web API controllers
+├── Domain/                    # Core business entities
+│   └── Entities/              # Entity classes
+├── Application/              # Business logic
+│   ├── Interfaces/            # Interface definitions
+│   ├── DTOs/                  # Data transfer objects
+│   ├── Services/              # Service implementations
+│   └── Validation/            # Validation logic
+├── Infrastructure/            # Data access
+│   ├── Data/                  # DbContext, configurations, seed data
+│   ├── Repositories/          # Repository implementations
+│   └── Services/              # External services
+└── API/                       # HTTP endpoints
+    └── Controllers/           # Controllers
 ```
 
 ---
@@ -26,6 +35,12 @@ dotnet build -c Release
 ### Run API
 ```bash
 dotnet run --project src/API/API.csproj
+```
+
+### EF Migrations
+```bash
+dotnet ef migrations add <Name> --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj
+dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj
 ```
 
 ---
@@ -73,7 +88,7 @@ dotnet test -v n
 ```csharp
 public class Recipe
 {
-    public string Id { get; set; } = string.Empty;  // 业务主键，6位数字如"000001"
+    public string Id { get; set; } = string.Empty;  // 业务主键，如"R202604040001"
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -145,6 +160,6 @@ public class RecipesController(ILogger<RecipesController> _logger) : ControllerB
 - **Swagger** - Available at `/swagger` in development
 
 ## Entity Design
-- Recipe.Id 和 Tag.Id 为业务主键，由程序生成，6位数字字符串如 "000001"
+- Recipe.Id 和 Tag.Id 为业务主键，由程序生成，格式为"前缀+8位日期+4位序列号"（如 R202604040001、T202604040001）
 - Tag 与 Recipe 为多对多关系，Recipe.ICollection\<Tag\> + Tag.ICollection\<Recipe\>，EF自动生成中间表
 - Ingredient 和 Step 使用复合主键 (RecipeId + RowNo)

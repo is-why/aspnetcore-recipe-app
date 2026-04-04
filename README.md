@@ -22,10 +22,19 @@ dotnet run --project src/API/API.csproj
 
 ```
 src/
-├── Domain/          # 领域实体
-├── Application/     # 业务逻辑、接口、DTO
-├── Infrastructure/  # 数据访问、仓储
-└── API/             # Web API
+├── Domain/                    # 领域层：核心业务实体
+│   └── Entities/              # 实体类
+├── Application/               # 应用层：业务逻辑
+│   ├── Interfaces/            # 接口定义
+│   ├── DTOs/                  # 数据传输对象
+│   ├── Services/              # 服务实现
+│   └── Validation/            # 验证逻辑
+├── Infrastructure/            # 基础设施层：数据访问
+│   ├── Data/                  # DbContext、配置、种子数据
+│   ├── Repositories/          # 仓储实现
+│   └── Services/              # 外部服务
+└── API/                       # 表现层：HTTP接口
+    └── Controllers/           # 控制器
 ```
 
 ## 实体
@@ -33,7 +42,7 @@ src/
 ### Recipe
 | 字段 | 类型 | 说明 |
 | :--- | :--- | :--- |
-| Id | string | 业务主键，6位数字，如 "000001"、"000002" |
+| Id | string | 业务主键，如 "R202604040001"（前缀R + 8位日期 + 4位序列号） |
 | Title | string | 食谱标题，必填 |
 | Description | string?(500) | 食谱简介，可为空，最大500字符 |
 | CreatedAt | DateTime | 创建时间 |
@@ -60,6 +69,6 @@ src/
 ### Tag
 | 字段 | 类型 | 说明 |
 | :--- | :--- | :--- |
-| Id | string | 业务主键，6位数字，如 "000001"、"000002" |
+| Id | string | 业务主键，如 "T202604040001"（前缀T + 8位日期 + 4位序列号） |
 | Name | string | 标签名称，唯一 |
 | Recipes | ICollection\<Recipe\> | 食谱列表，多对多，EF自动生成中间表 |
